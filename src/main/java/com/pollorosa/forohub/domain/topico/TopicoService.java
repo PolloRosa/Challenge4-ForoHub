@@ -120,4 +120,11 @@ public class TopicoService {
 
         return new DatosDetalleTopico(topicoParaActualizar.getId(), topicoParaActualizar.getTitulo(), topicoParaActualizar.getMensaje(), topicoParaActualizar.getFechaCreacion());
     }
+
+    public void eliminar(Long id) {
+        if(!topicoRepository.existsById(id)) {
+            throw new ValidacionException("No existe tópico con el id indicado.");
+        }
+        topicoRepository.deleteById(id);
+    }
 }
