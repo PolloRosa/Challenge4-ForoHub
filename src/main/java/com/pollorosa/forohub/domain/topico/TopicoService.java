@@ -3,6 +3,7 @@ package com.pollorosa.forohub.domain.topico;
 import com.pollorosa.forohub.domain.ValidacionException;
 import com.pollorosa.forohub.domain.curso.CursoRepository;
 import com.pollorosa.forohub.domain.topico.validaciones.ValidadorCursoExisteActivo;
+import com.pollorosa.forohub.domain.topico.validaciones.ValidadorDeActualizacion;
 import com.pollorosa.forohub.domain.topico.validaciones.ValidadorDeBusqueda;
 import com.pollorosa.forohub.domain.topico.validaciones.ValidadorDeRegistro;
 import com.pollorosa.forohub.domain.usuario.UsuarioRepository;
@@ -35,6 +36,9 @@ public class TopicoService {
     @Autowired
     private List<ValidadorDeBusqueda> validadoresBusqueda;
 
+    @Autowired
+    private List<ValidadorDeActualizacion> validadoresActualizacion;
+
     public DatosDetalleTopico registrar(@Valid DatosRegistroTopico datos) {
         if(!usuarioRepository.existsById(datos.idUsuario())) {
             throw new ValidacionException("No existe usuario con el id indicado.");
@@ -43,7 +47,7 @@ public class TopicoService {
         // validaciones
         // 1 usuario activo
         // 2 existe el curso y es activo
-        // 3 duplicidad de topicos (titulo+mensaje unicos)
+        // 3 duplicidad de tópicos (título+mensaje únicos)
         validadores.forEach(v -> v.validar(datos));
 
         var autor = usuarioRepository.findById(datos.idUsuario()).get();
@@ -89,5 +93,31 @@ public class TopicoService {
             throw new ValidacionException("No existe topico con el id indicado.");
         }
         return topicoRepository.getReferenceById(id);
+    }
+
+    public DatosDetalleTopico actualizar(Long id, @Valid DatosRegistroTopico datos) {
+        if(!topicoRepository.existsById(id)) {
+            throw new ValidacionException("No existe tópico con el id indicado.");
+        }
+        if(!usuarioRepository.existsById(datos.idUsuario())) {
+            throw new ValidacionException("No existe usuario con el id indicado.");
+        }
+        // validaciones
+        // 1 usuario activo
+        // 2 existe el curso y es activo
+        validadoresActualizacion.forEach(v -> v.validar(datos));
+
+        // 3 duplicidad de tópicos para actualización (título+mensaje únicos)
+        var cuantos = topicoRepository.countByTituloAndMensajeAndIdNot(datos.titulo(), datos.mensaje(), id);
+        if(cuantos > 0) {
+            throw new ValidacionException("No se puede actualizar tópico duplicado, debe cambiar título o mensaje.");
+        }
+
+        var topicoParaActualizar = topicoRepository.getReferenceById(id);
+        var autor = usuarioRepository.findById(datos.idUsuario()).get();
+        var curso = cursoRepository.findByNombre(datos.nombreCurso()).get(0);
+        topicoParaActualizar.actualizar(datos, autor, curso);
+
+        return new DatosDetalleTopico(topicoParaActualizar.getId(), topicoParaActualizar.getTitulo(), topicoParaActualizar.getMensaje(), topicoParaActualizar.getFechaCreacion());
     }
 }

@@ -54,4 +54,11 @@ public class TopicoController {
         var topico = topicoService.obtener(id);
         return ResponseEntity.ok(new DatosListaTopico(topico));
     }
+
+    @Transactional
+    @PutMapping({"/{id}", "/"})
+    public ResponseEntity actualizar(@PathVariable Long id, @RequestBody @Valid DatosRegistroTopico datos) {
+        var topico = topicoService.actualizar(id, datos);
+        return ResponseEntity.ok(topico);
+    }
 }

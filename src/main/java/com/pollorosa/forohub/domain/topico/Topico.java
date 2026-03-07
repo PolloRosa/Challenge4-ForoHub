@@ -3,6 +3,7 @@ package com.pollorosa.forohub.domain.topico;
 import com.pollorosa.forohub.domain.curso.Curso;
 import com.pollorosa.forohub.domain.usuario.Usuario;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,5 +56,12 @@ public class Topico {
         this.autor = autor;
         this.curso = curso;
         this.activo = true;
+    }
+
+    public void actualizar(@Valid DatosRegistroTopico datos, Usuario autor, Curso curso) {
+        this.titulo = datos.titulo();
+        this.mensaje = datos.mensaje();
+        this.autor = autor;
+        this.curso = curso;
     }
 }
