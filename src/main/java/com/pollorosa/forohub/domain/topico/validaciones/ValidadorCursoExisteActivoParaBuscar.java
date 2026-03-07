@@ -8,19 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
-public class ValidadorCursoExisteActivo implements ValidadorDeRegistro {
+public class ValidadorCursoExisteActivoParaBuscar implements ValidadorDeBusqueda {
 
     @Autowired
     private CursoRepository cursoRepository;
 
     @Override
-    public void validar(DatosRegistroTopico datos) {
-        List<Curso> cursos = cursoRepository.findByActivoAndNombre(true, datos.nombreCurso());
+    public void validar(Optional<String> nombreCurso, Optional<Integer> anioCreacion) {
+        if(nombreCurso.isEmpty()) {
+            return;
+        }
+        List<Curso> cursos = cursoRepository.findByActivoAndNombre(true, nombreCurso.get());
         if(cursos.isEmpty()) {
-            throw new ValidacionException("No se puede registrar tópico de curso no registrado o inactivo.");
+            throw new ValidacionException("Curso no registrado o inactivo.");
         }
     }
-
 }

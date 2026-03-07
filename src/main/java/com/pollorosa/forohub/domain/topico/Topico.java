@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "topico")
-@Entity(name = "topico")
+@Entity(name = "Topico")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,16 +1,21 @@
 package com.pollorosa.forohub.controller;
 
+import com.pollorosa.forohub.domain.topico.DatosListaTopico;
 import com.pollorosa.forohub.domain.topico.DatosRegistroTopico;
+import com.pollorosa.forohub.domain.topico.TopicoRepository;
 import com.pollorosa.forohub.domain.topico.TopicoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -28,5 +33,19 @@ public class TopicoController {
         var uri = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(nuevoTopico.id()).toUri();
 
         return ResponseEntity.created(uri).body(nuevoTopico);
+    }
+
+    @GetMapping({"", "/"})
+    public ResponseEntity<Page<DatosListaTopico>> listar(@PageableDefault(size = 10, sort = {"fechaCreacion"}, direction =Sort.Direction.ASC) Pageable paginacion) {
+        var pagina = topicoService.listar(paginacion);
+        return ResponseEntity.ok(pagina);
+    }
+
+    @GetMapping({"/curso/{nombreCurso}", "/anio/{anioCreacion}", "/curso/{nombreCurso}/anio/{anioCreacion}", "/anio/{anioCreacion}/curso/{nombreCurso}"})
+    public ResponseEntity<Page<DatosListaTopico>> buscar(@PathVariable Optional<String> nombreCurso,
+                                                         @PathVariable Optional<Integer> anioCreacion,
+                                                         @PageableDefault(size = 10, sort = {"fechaCreacion"}, direction = Sort.Direction.ASC) Pageable paginacion) {
+        var pagina = topicoService.buscar(nombreCurso, anioCreacion, paginacion);
+        return ResponseEntity.ok(pagina);
     }
 }

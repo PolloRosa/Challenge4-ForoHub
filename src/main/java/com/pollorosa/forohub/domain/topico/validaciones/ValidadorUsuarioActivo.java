@@ -6,7 +6,6 @@ import com.pollorosa.forohub.domain.usuario.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class ValidadorUsuarioActivo implements ValidadorDeRegistro {
 

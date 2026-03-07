@@ -2,13 +2,20 @@ package com.pollorosa.forohub.domain.topico;
 
 import com.pollorosa.forohub.domain.ValidacionException;
 import com.pollorosa.forohub.domain.curso.CursoRepository;
+import com.pollorosa.forohub.domain.topico.validaciones.ValidadorCursoExisteActivo;
+import com.pollorosa.forohub.domain.topico.validaciones.ValidadorDeBusqueda;
 import com.pollorosa.forohub.domain.topico.validaciones.ValidadorDeRegistro;
 import com.pollorosa.forohub.domain.usuario.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TopicoService {
@@ -24,6 +31,9 @@ public class TopicoService {
 
     @Autowired
     private List<ValidadorDeRegistro> validadores;
+
+    @Autowired
+    private List<ValidadorDeBusqueda> validadoresBusqueda;
 
     public DatosDetalleTopico registrar(@Valid DatosRegistroTopico datos) {
         if(!usuarioRepository.existsById(datos.idUsuario())) {
@@ -43,4 +53,35 @@ public class TopicoService {
 
         return new DatosDetalleTopico(nuevoTopico.getId(), nuevoTopico.getTitulo(), nuevoTopico.getMensaje(), nuevoTopico.getFechaCreacion());
     }
+
+    public Page<DatosListaTopico> listar(Pageable paginacion) {
+        return topicoRepository.findAllByActivoTrue(paginacion)
+                .map(DatosListaTopico::new);
+    }
+
+    public Page<DatosListaTopico> buscar(Optional<String> nombreCurso, Optional<Integer> anioCreacion, Pageable paginacion) {
+        // validaciones
+        validadoresBusqueda.forEach(v -> v.validar(nombreCurso, anioCreacion));
+
+        if(nombreCurso.isPresent() && anioCreacion.isPresent()) {
+            LocalDate fecha = LocalDate.of(anioCreacion.get(), 1, 1);
+            LocalDateTime primerDiaDelAnio = fecha.atStartOfDay();
+            LocalDateTime ultimoDiaDelAnio = fecha.plusYears(1).atStartOfDay();
+            return topicoRepository.buscarPorNombreYAnioCreacionCurso(primerDiaDelAnio, ultimoDiaDelAnio, nombreCurso.get(), paginacion)
+                    .map(DatosListaTopico::new);
+        }
+        if(nombreCurso.isPresent() && anioCreacion.isEmpty()) {
+            return topicoRepository.buscarPorNombreCurso(nombreCurso.get(), paginacion)
+                .map(DatosListaTopico::new);
+        }
+        if(nombreCurso.isEmpty() && anioCreacion.isPresent()) {
+            LocalDate fecha = LocalDate.of(anioCreacion.get(), 1, 1);
+            LocalDateTime primerDiaDelAnio = fecha.atStartOfDay();
+            LocalDateTime ultimoDiaDelAnio = fecha.plusYears(1).atStartOfDay();
+            return topicoRepository.findAllByFechaCreacionBetweenAndActivoTrue(primerDiaDelAnio, ultimoDiaDelAnio, paginacion)
+                    .map(DatosListaTopico::new);
+        }
+        return listar(paginacion);
+    }
+
 }

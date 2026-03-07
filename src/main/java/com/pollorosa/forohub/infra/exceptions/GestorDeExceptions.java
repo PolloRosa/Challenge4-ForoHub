@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GestorDeExceptions {
@@ -14,6 +15,11 @@ public class GestorDeExceptions {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity gestionarError404() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity gestionarError404ConversionAEnteros(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.badRequest().body(new DatosErrorValidacion(ex.getName(), "Debe ser un número válido."));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
