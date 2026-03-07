@@ -16,7 +16,7 @@ public class ValidadorUsuarioActivo implements ValidadorDeRegistro {
     public void validar(DatosRegistroTopico datos) {
         var usuario = usuarioRepository.getReferenceById(datos.idUsuario());
         if(!usuario.getActivo()) {
-            throw new ValidacionException("No se puede registrar tópico de usuario no inactivo.");
+            throw new ValidacionException("No se puede registrar tópico de usuario inactivo.");
         }
     }
 }
