@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -19,7 +20,7 @@ public class GestorDeExceptions {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity gestionarError404ConversionAEnteros(MethodArgumentTypeMismatchException ex) {
-        return ResponseEntity.badRequest().body(new DatosErrorValidacion(ex.getName(), "Debe ser un número válido."));
+        return ResponseEntity.badRequest().body(new DatosErrorValidacion(ex.getName(), "Debe ser un valor válido."));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -29,6 +30,11 @@ public class GestorDeExceptions {
                 errores.stream()
                         .map(DatosErrorValidacion::new)
                         .toList());
+    }
+
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity gestionarError400ParametrosFaltantes(MissingPathVariableException ex) {
+        return ResponseEntity.badRequest().body(new DatosErrorValidacion(ex.getVariableName(), "Parámetro es obligatorio."));
     }
 
     @ExceptionHandler(ValidacionException.class)

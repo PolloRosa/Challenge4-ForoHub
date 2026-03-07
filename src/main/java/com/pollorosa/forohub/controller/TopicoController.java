@@ -35,7 +35,7 @@ public class TopicoController {
         return ResponseEntity.created(uri).body(nuevoTopico);
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping
     public ResponseEntity<Page<DatosListaTopico>> listar(@PageableDefault(size = 10, sort = {"fechaCreacion"}, direction =Sort.Direction.ASC) Pageable paginacion) {
         var pagina = topicoService.listar(paginacion);
         return ResponseEntity.ok(pagina);
@@ -47,5 +47,11 @@ public class TopicoController {
                                                          @PageableDefault(size = 10, sort = {"fechaCreacion"}, direction = Sort.Direction.ASC) Pageable paginacion) {
         var pagina = topicoService.buscar(nombreCurso, anioCreacion, paginacion);
         return ResponseEntity.ok(pagina);
+    }
+
+    @GetMapping({"/{id}", "/"})
+    public ResponseEntity obtener(@PathVariable Long id) {
+        var topico = topicoService.obtener(id);
+        return ResponseEntity.ok(new DatosListaTopico(topico));
     }
 }

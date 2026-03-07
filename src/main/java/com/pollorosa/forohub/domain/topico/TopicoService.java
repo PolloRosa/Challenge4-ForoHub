@@ -84,4 +84,10 @@ public class TopicoService {
         return listar(paginacion);
     }
 
+    public Topico obtener(Long id) {
+        if(!topicoRepository.existsById(id)) {
+            throw new ValidacionException("No existe topico con el id indicado.");
+        }
+        return topicoRepository.getReferenceById(id);
+    }
 }
