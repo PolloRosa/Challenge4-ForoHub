@@ -2,8 +2,8 @@ package com.pollorosa.forohub.controller;
 
 import com.pollorosa.forohub.domain.topico.DatosListaTopico;
 import com.pollorosa.forohub.domain.topico.DatosRegistroTopico;
-import com.pollorosa.forohub.domain.topico.TopicoRepository;
 import com.pollorosa.forohub.domain.topico.TopicoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
-//@SecurityRequirement(name = "bearer-key")
+@SecurityRequirement(name = "bearer-key")
 public class TopicoController {
 
     @Autowired
