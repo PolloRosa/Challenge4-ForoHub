@@ -2,7 +2,16 @@
 
 ![Versión: 1.0](https://img.shields.io/badge/VERSIÓN-1.0-blue) ![Fecha de lanzamiento: 07/03/2026](https://img.shields.io/badge/Fecha_de_lanzamiento-07/03/2026-blue)
 
-![Java](https://img.shields.io/badge/Java-b07219)
+![Java 17](https://img.shields.io/badge/Java_17-b07219)
+![Spring Boot 3.5.11](https://img.shields.io/badge/Spring_Boot_3.5.11-6db33f)
+![MySQL 8.0.45](https://img.shields.io/badge/MySQL_8.0.45-0074a3)
+![Maven 4](https://img.shields.io/badge/Maven_4-F79A23)
+
+![Flyway](https://img.shields.io/badge/Flyway-c00c00)
+![Lombok](https://img.shields.io/badge/Lombok-ce4844)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6db33f)
+![JWT](https://img.shields.io/badge/JWT-191919)
+
 
 ## Introducción
 
